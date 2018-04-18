@@ -1,5 +1,6 @@
 package kamene;
 
+import java.util.Iterator;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -46,6 +47,22 @@ public class Field {
 			for (int col = 0; col < columnCount; col++) {
 				if (getTile(row, col) == null) {
 					tiles[row][col] = new EmptyTile();
+				}
+			}
+		}
+	}
+
+	public void swapTiles(int r, int c) throws MoveStoneException {
+		for (int row = 0; row < rowCount; row++) {
+			for (int col = 0; col < columnCount; col++) {
+				if (getTile(row, col) instanceof EmptyTile) {
+					if ((row + r) >= 0 && (row + r) < rowCount && (col + c) >= 0 && (col + c) < columnCount) {
+						tiles[row][col] = new NumberTile(((NumberTile) tiles[row + r][col + c]).getNumber());
+						tiles[row + r][col + c] = new EmptyTile();
+						return;
+					} else {
+						throw new MoveStoneException("Nenasiel sa ziaden kamen na posunutie!");
+					}
 				}
 			}
 		}
