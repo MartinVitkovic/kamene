@@ -24,10 +24,11 @@ public class ConsoleUI implements UserInterface {
 		this.field = field;
 
 		while (true) {
+
 			update();
 			consoleInput();
 
-			if (field.getState() == GameState.SOLVED) {
+			if (field.isSolved()) {
 				System.out.println("Hra vyhrata!");
 				System.out.println("Hraci cas: " + mainStone.getPlayingTime() + "s");
 				System.exit(0);
@@ -68,6 +69,27 @@ public class ConsoleUI implements UserInterface {
 
 	}
 
+	/*
+	 * POZNAMKA PRE OPRAVUJUCEHO
+	 * 
+	 * Pokusal som sa zadavat velkost pola cez konzolu a ze az potom spravi pole,
+	 * ale netusim ako to dostat do MainStone kde sa pole vytvara. A ze by napriklad
+	 * po zadani Enter sa vygenerovalo to defaultne pole 4x4.
+	 */
+
+	// public void setGameField() {
+	// String input = readLine().trim();
+	// try {
+	// Pattern pattern = Pattern.compile("([0-9])([ ,])([0-9])");
+	// Matcher matcher = pattern.matcher(input);
+	// if(matcher.matches()) {
+	// int row = matcher.group(1).charAt(0) - 65;
+	// int column = matcher.group(3).charAt(0) - 65;
+	//
+	// }
+	// }
+	// }
+
 	private void handleInput(String input) throws kamene.WrongFormatException, MoveStoneException {
 		Pattern pattern = Pattern.compile("(/?)([a-z]+)");
 
@@ -78,6 +100,7 @@ public class ConsoleUI implements UserInterface {
 
 			if (command.equals("exit")) {
 				System.out.println("Hraci cas: " + mainStone.getPlayingTime() + "s");
+				field.save();
 				System.exit(0);
 			} else if (command.equals("new")) {
 				new MainStone();

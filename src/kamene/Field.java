@@ -1,14 +1,21 @@
 package kamene;
-
-import java.util.Iterator;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class Field {
+public class Field implements Serializable{
 	private final Tile[][] tiles;
 	private final int rowCount;
 	private final int columnCount;
 	private GameState state = GameState.PLAYING;
+	private static final Field DEFAULT_FIELD = new Field(4,4);
+	private static final String GAME_FILE = System.getProperty("user.home") + System.getProperty("file.separator")
+	+ "minesweeper.settings";
 
 	public Field(int rowCount, int columnCount) {
 		super();
@@ -68,6 +75,20 @@ public class Field {
 		}
 	}
 
+	public boolean isSolved() {
+		for (int row = 0; row < rowCount; row++) {
+			for (int col = 0; col < columnCount; col++) {
+				if (!(tiles[rowCount - 1][columnCount - 1] instanceof EmptyTile)) {
+					return false;
+				} else if(!((((NumberTile)tiles[row][col]).getNumber()) < (((NumberTile)tiles[row][col+1]).getNumber()))){
+					return false;
+				}
+			}
+		}
+		state = GameState.SOLVED;
+		return true;
+	}
+
 	public Tile getTile(int row, int column) {
 		return tiles[row][column];
 	}
@@ -83,5 +104,23 @@ public class Field {
 	public int getColumnCount() {
 		return columnCount;
 	}
+	
+	public void save() {
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(GAME_FILE))){
+			oos.writeObject(this);
+		}catch (IOException ex) {
+			System.err.println("ERROR: " + ex.getMessage());
+		}
+	}
+	
+	public static Field load() {
+		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(GAME_FILE))){
+			return (Field) ois.readObject();
+		} catch (Exception e) {
+		e.getStackTrace();
+		return DEFAULT_FIELD;
+		}
+	}
+
 
 }
